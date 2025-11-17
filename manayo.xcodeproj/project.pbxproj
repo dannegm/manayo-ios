@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		95C1C8252ECB0DD200404C84 /* LICENSE in Resources */ = {isa = PBXBuildFile; fileRef = 95C1C8242ECB0DD000404C84 /* LICENSE */; };
 		95C1C8272ECB0DF600404C84 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 95C1C8262ECB0DF500404C84 /* README.md */; };
+		95C1C8292ECB0EBF00404C84 /* .gitignore in Resources */ = {isa = PBXBuildFile; fileRef = 95C1C8282ECB0EB600404C84 /* .gitignore */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -34,6 +35,7 @@
 		95C1C7EB2EC9589F00404C84 /* manayoUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = manayoUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		95C1C8242ECB0DD000404C84 /* LICENSE */ = {isa = PBXFileReference; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
 		95C1C8262ECB0DF500404C84 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		95C1C8282ECB0EB600404C84 /* .gitignore */ = {isa = PBXFileReference; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -95,6 +97,7 @@
 		95C1C7CB2EC9589E00404C84 = {
 			isa = PBXGroup;
 			children = (
+				95C1C8282ECB0EB600404C84 /* .gitignore */,
 				95C1C8262ECB0DF500404C84 /* README.md */,
 				95C1C8242ECB0DD000404C84 /* LICENSE */,
 				95C1C7D62EC9589E00404C84 /* manayo */,
@@ -234,6 +237,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				95C1C8292ECB0EBF00404C84 /* .gitignore in Resources */,
 				95C1C8272ECB0DF600404C84 /* README.md in Resources */,
 				95C1C8252ECB0DD200404C84 /* LICENSE in Resources */,
 			);

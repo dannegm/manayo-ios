@@ -4,7 +4,7 @@ Manayō es una app iOS minimalista para aprender japonés usando “cartas de he
 Cada carta contiene una frase o expresión japonesa, su lectura, significado, ejemplo de uso y audio TTS.
 Piensa en un deck de academia mágica… pero versión japonés práctico, casual y bonito.
 
-🌸 ¿Por qué se llama Manayō?
+## 🌸 ¿Por qué se llama Manayō?
 
 El nombre Manayō nació en una de esas conversaciones donde el japonés y la creatividad se mezclan sin pedir permiso.
 Al principio solo buscábamos algo que sonara a juego de palabras entre mana (la energía mágica en los TCG) y yomi (leer, entender). Algo tipo “cartas de hechizo, pero para aprender japonés”.

@@ -72,4 +72,25 @@ public final class ManayoViewModel: ObservableObject {
         meta[card.id] = current
         ManayoMetaStore.shared.saveMeta(meta)
     }
+    
+    public func createCard(from draft: ManayoNewCardDraft) async {
+        do {
+            let created = try await ManayoAPI.shared.createCard(from: draft)
+
+            cards.insert(created, at: 0)
+
+            var newMeta = meta
+            newMeta[created.id] = ManayoCardMeta()
+            meta = newMeta
+            ManayoMetaStore.shared.saveMeta(newMeta)
+
+            ManayoLocalStore.shared.saveCards(cards)
+
+            errorMessage = nil
+        } catch {
+            let nsError = error as NSError
+            print("❌ Create card failed:", nsError)
+            errorMessage = "No se pudo crear la carta. Intenta de nuevo."
+        }
+    }
 }

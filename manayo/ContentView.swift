@@ -14,86 +14,111 @@ struct ContentView: View {
 
     var body: some View {
         NavigationStack {
-            Group {
-                if viewModel.isLoading {
-                    ProgressView("Loading cards…")
-                } else if let error = viewModel.errorMessage {
-                    VStack(spacing: 12) {
-                        Text(error)
-                            .font(.footnote)
-                            .foregroundColor(.red)
-                        Button("Retry") {
-                            Task {
-                                await viewModel.loadCards()
+            ZStack {
+                LinearGradient(
+                    colors: [
+                        Color.black,
+                        Color(red: 0.05, green: 0.05, blue: 0.1)
+                    ],
+                    startPoint: .top,
+                    endPoint: .bottom
+                )
+                .ignoresSafeArea()
+                
+                Group {
+                    // 1) If we already have cards, ALWAYS show the main card UI
+                    if let current = viewModel.cards[safe: currentIndex] {
+                        let meta = viewModel.metaFor(card: current)
+                        
+                        ZStack {
+                            ManayoCardView(
+                                card: current,
+                                viewCount: meta.viewCount,
+                                isFavorite: meta.isFavorite
+                            )
+                            .offset(dragOffset)
+                            .scaleEffect(cardScale)
+                            .opacity(cardOpacity)
+                            .rotationEffect(.degrees(Double(dragOffset.width / 20)))
+                            .gesture(
+                                DragGesture()
+                                    .onChanged { value in
+                                        dragOffset = value.translation
+                                    }
+                                    .onEnded { value in
+                                        let horizontalThreshold: CGFloat = 80
+                                        let verticalThreshold: CGFloat = 100
+                                        let translation = value.translation
+                                        
+                                        // vertical swipe → open deck
+                                        if abs(translation.height) > verticalThreshold &&
+                                            abs(translation.width) < horizontalThreshold {
+                                            withAnimation(.spring(response: 0.25, dampingFraction: 0.8)) {
+                                                dragOffset = .zero
+                                                cardScale = 1.0
+                                            }
+                                            showDeck = true
+                                            return
+                                        }
+
+                                        if translation.width > horizontalThreshold {
+                                            favoriteAndAdvance()
+                                        } else if translation.width < -horizontalThreshold {
+                                            discardAndAdvance()
+                                        } else {
+                                            withAnimation(.spring(response: 0.25, dampingFraction: 0.8)) {
+                                                dragOffset = .zero
+                                                cardScale = 1.0
+                                            }
+                                        }
+                                    }
+                            )
+                            
+                            bottomNavBar
+                        }
+                        .navigationBarTitleDisplayMode(.inline)
+                        .toolbar(.hidden, for: .navigationBar)
+                        
+                        // Optional: tiny loading badge if syncing in background
+                        if viewModel.isLoading {
+                            VStack {
+                                Spacer()
+                                Text("Syncing…")
+                                    .font(.caption2)
+                                    .foregroundColor(.white.opacity(0.6))
+                                    .padding(.bottom, 8)
+                            }
+                            .transition(.opacity)
+                        }
+                        
+                    // 2) No cards yet, but still loading → first-time loading state
+                    } else if viewModel.isLoading {
+                        VStack(spacing: 12) {
+                            ProgressView()
+                            Text("Loading your deck…")
+                                .font(.footnote)
+                                .foregroundColor(.secondary)
+                        }
+                        
+                    // 3) Error and no cards
+                    } else if let error = viewModel.errorMessage {
+                        VStack(spacing: 12) {
+                            Text(error)
+                                .font(.footnote)
+                                .foregroundColor(.red)
+                            Button("Retry") {
+                                Task {
+                                    await viewModel.loadCards()
+                                }
                             }
                         }
+                        
+                    // 4) No cards, no error, no loading → empty state
+                    } else {
+                        Text("No cards available.")
+                            .font(.footnote)
+                            .foregroundColor(.secondary)
                     }
-                } else if let current = viewModel.cards[safe: currentIndex] {
-                    let meta = viewModel.metaFor(card: current)
-                    
-                    ZStack {
-                        LinearGradient(
-                            colors: [
-                                Color.black,
-                                Color(red: 0.05, green: 0.05, blue: 0.1)
-                            ],
-                            startPoint: .top,
-                            endPoint: .bottom
-                        )
-                        .ignoresSafeArea()
-
-                        ManayoCardView(
-                            card: current,
-                            viewCount: meta.viewCount,
-                            isFavorite: meta.isFavorite
-                        )
-                        .offset(dragOffset)
-                        .scaleEffect(cardScale)
-                        .opacity(cardOpacity)
-                        .rotationEffect(.degrees(Double(dragOffset.width / 20)))
-                        .gesture(
-                            DragGesture()
-                            .onChanged { value in
-                                dragOffset = value.translation
-                            }
-                            .onEnded { value in
-                                let horizontalThreshold: CGFloat = 80
-                                let verticalThreshold: CGFloat = 100
-                                let translation = value.translation
-                                
-                                // swipe vertical fuerte (arriba o abajo) → abrir deck
-                                if abs(translation.height) > verticalThreshold &&
-                                    abs(translation.width) < horizontalThreshold {
-                                    withAnimation(.spring(response: 0.25, dampingFraction: 0.8)) {
-                                        dragOffset = .zero
-                                        cardScale = 1.0
-                                    }
-                                    showDeck = true
-                                    return
-                                }
-
-                                if translation.width > horizontalThreshold {
-                                    // swipe right → favorite + next card
-                                    favoriteAndAdvance()
-                                } else if translation.width < -horizontalThreshold {
-                                    // swipe left → skip → next card
-                                    discardAndAdvance()
-                                } else {
-                                    withAnimation(.spring(response: 0.25, dampingFraction: 0.8)) {
-                                        dragOffset = .zero
-                                        cardScale = 1.0
-                                    }
-                                }
-                            }
-                        )
-                        bottomNavBar
-                    }
-                    .navigationBarTitleDisplayMode(.inline)
-                    .toolbar(.hidden, for: .navigationBar)
-                } else {
-                    Text("No cards available.")
-                        .font(.footnote)
-                        .foregroundColor(.secondary)
                 }
             }
         }
@@ -116,6 +141,18 @@ struct ContentView: View {
             )
             .presentationDetents([.large])
             .presentationDragIndicator(.visible)
+        }
+        .sheet(isPresented: $showNewCardSheet) {
+            NewCardView { draft in
+                Task {
+                    await viewModel.createCard(from: draft)
+                    
+                    if let newIndex = viewModel.cards.firstIndex(where: { $0.jp == draft.jp && $0.meaning == draft.meaning }) {
+                        currentIndex = newIndex
+                        markCurrentSeen()
+                    }
+                }
+            }
         }
     }
     
@@ -195,8 +232,6 @@ struct ContentView: View {
     }
 
     private func advanceIndex() {
-        // future: handle favorite flag here depending on swipe direction
-
         guard !viewModel.cards.isEmpty else { return }
 
         if currentIndex >= viewModel.cards.count - 1 {

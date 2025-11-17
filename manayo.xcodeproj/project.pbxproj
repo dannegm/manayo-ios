@@ -6,6 +6,11 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		95C1C8252ECB0DD200404C84 /* LICENSE in Resources */ = {isa = PBXBuildFile; fileRef = 95C1C8242ECB0DD000404C84 /* LICENSE */; };
+		95C1C8272ECB0DF600404C84 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 95C1C8262ECB0DF500404C84 /* README.md */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		95C1C7E22EC9589F00404C84 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -27,11 +32,26 @@
 		95C1C7D42EC9589E00404C84 /* manayo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = manayo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		95C1C7E12EC9589F00404C84 /* manayoTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = manayoTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		95C1C7EB2EC9589F00404C84 /* manayoUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = manayoUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		95C1C8242ECB0DD000404C84 /* LICENSE */ = {isa = PBXFileReference; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
+		95C1C8262ECB0DF500404C84 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 /* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		95C1C8212ECB0BCB00404C84 /* Exceptions for "manayo" folder in "manayo" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 95C1C7D32EC9589E00404C84 /* manayo */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		95C1C7D62EC9589E00404C84 /* manayo */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				95C1C8212ECB0BCB00404C84 /* Exceptions for "manayo" folder in "manayo" target */,
+			);
 			path = manayo;
 			sourceTree = "<group>";
 		};
@@ -75,6 +95,8 @@
 		95C1C7CB2EC9589E00404C84 = {
 			isa = PBXGroup;
 			children = (
+				95C1C8262ECB0DF500404C84 /* README.md */,
+				95C1C8242ECB0DD000404C84 /* LICENSE */,
 				95C1C7D62EC9589E00404C84 /* manayo */,
 				95C1C7E42EC9589F00404C84 /* manayoTests */,
 				95C1C7EE2EC9589F00404C84 /* manayoUITests */,
@@ -212,6 +234,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				95C1C8272ECB0DF600404C84 /* README.md in Resources */,
+				95C1C8252ECB0DD200404C84 /* LICENSE in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -400,6 +424,7 @@
 				DEVELOPMENT_TEAM = W87HF8E574;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = manayo/Info.plist;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -428,6 +453,7 @@
 				DEVELOPMENT_TEAM = W87HF8E574;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = manayo/Info.plist;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;

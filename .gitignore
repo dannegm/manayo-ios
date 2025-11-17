@@ -1,0 +1,30 @@
+# Xcode
+DerivedData/
+build/
+*.xcworkspace/xcuserdata/
+*.xcodeproj/project.xcworkspace/xcuserdata/
+*.xcodeproj/xcuserdata/
+
+# SwiftPM
+.swiftpm/
+.build/
+
+# User-specific Xcode files
+xcuserdata/
+*.xcuserstate
+*.xccheckout
+*.moved-aside
+*.xcscmblueprint
+
+# iOS Simulator logs
+Library/Developer/CoreSimulator/
+
+# Misc
+*.DS_Store
+*.swp
+*.lock
+*.idea/
+*.orig
+
+# SwiftUI Previews
+*.preview-thumbnails

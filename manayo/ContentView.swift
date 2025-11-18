@@ -12,7 +12,6 @@ struct ContentView: View {
     @State private var showNewCardSheet: Bool = false
     @State private var showMenuSheet: Bool = false
     @State private var newCardMode: NewCardMode = .choice
-    @State private var sheetDetent: PresentationDetent = .fraction(0.35)
     
     private enum NewCardMode {
         case choice
@@ -37,75 +36,84 @@ struct ContentView: View {
                     // 1) If we already have cards, ALWAYS show the main card UI
                     if let current = viewModel.cards[safe: currentIndex] {
                         let meta = viewModel.metaFor(card: current)
-                        
-                        ZStack {
-                            ManayoCardView(
-                                card: current,
-                                viewCount: meta.viewCount,
-                                isFavorite: meta.isFavorite
-                            )
-                            .offset(dragOffset)
-                            .scaleEffect(cardScale)
-                            .opacity(cardOpacity)
-                            .rotationEffect(.degrees(Double(dragOffset.width / 20)))
-                            .gesture(
-                                DragGesture()
-                                    .onChanged { value in
-                                        dragOffset = value.translation
-                                    }
-                                    .onEnded { value in
-                                        let horizontalThreshold: CGFloat = 80
-                                        let verticalThreshold: CGFloat = 100
-                                        let translation = value.translation
-                                        
-                                        // vertical swipe → open deck
-                                        if abs(translation.height) > verticalThreshold &&
-                                            abs(translation.width) < horizontalThreshold {
-                                            withAnimation(.spring(response: 0.25, dampingFraction: 0.8)) {
-                                                dragOffset = .zero
-                                                cardScale = 1.0
-                                            }
-                                            showDeck = true
-                                            return
+
+                            ZStack {
+                                
+                                VStack {
+                                    header
+                                    Spacer()
+                                }
+
+                                ManayoCardView(
+                                    card: current,
+                                    viewCount: meta.viewCount,
+                                    isFavorite: meta.isFavorite
+                                )
+                                .offset(dragOffset)
+                                .scaleEffect(cardScale)
+                                .opacity(cardOpacity)
+                                .rotationEffect(.degrees(Double(dragOffset.width / 20)))
+                                .gesture(
+                                    DragGesture()
+                                        .onChanged { value in
+                                            dragOffset = value.translation
                                         }
-                                        
-                                        if translation.width > horizontalThreshold {
-                                            favoriteAndAdvance()
-                                        } else if translation.width < -horizontalThreshold {
-                                            discardAndAdvance()
-                                        } else {
-                                            withAnimation(.spring(response: 0.25, dampingFraction: 0.8)) {
-                                                dragOffset = .zero
-                                                cardScale = 1.0
+                                        .onEnded { value in
+                                            let horizontalThreshold: CGFloat = 80
+                                            let verticalThreshold: CGFloat = 100
+                                            let translation = value.translation
+                                            
+                                            // vertical swipe → open deck
+                                            if abs(translation.height) > verticalThreshold &&
+                                                abs(translation.width) < horizontalThreshold {
+                                                withAnimation(.spring(response: 0.25, dampingFraction: 0.8)) {
+                                                    dragOffset = .zero
+                                                    cardScale = 1.0
+                                                }
+                                                showDeck = true
+                                                return
+                                            }
+                                            
+                                            if translation.width > horizontalThreshold {
+                                                favoriteAndAdvance()
+                                            } else if translation.width < -horizontalThreshold {
+                                                discardAndAdvance()
+                                            } else {
+                                                withAnimation(.spring(response: 0.25, dampingFraction: 0.8)) {
+                                                    dragOffset = .zero
+                                                    cardScale = 1.0
+                                                }
                                             }
                                         }
-                                    }
-                            )
-                            
-                            bottomNavBar
-                        }
-                        .navigationBarTitleDisplayMode(.inline)
-                        .toolbar(.hidden, for: .navigationBar)
-                        
+                                )
+                            }
+                            .navigationBarTitleDisplayMode(.inline)
+                            .toolbar(.hidden, for: .navigationBar)
+
                         // Optional: tiny loading badge if syncing in background
                         if viewModel.isLoading {
-                            VStack {
+                            VStack(spacing: 16) {
                                 Spacer()
-                                Text("Syncing…")
-                                    .font(.caption2)
-                                    .foregroundColor(.white.opacity(0.6))
-                                    .padding(.bottom, 8)
+                                
+                                LottieView(name: "manayo-loading", loopMode: .loop)
+                                    .frame(width: 180, height: 180)
+                                    .clipped()
+
+                                Spacer()
                             }
-                            .transition(.opacity)
+                            .opacity(0.5)
                         }
                         
                         // 2) No cards yet, but still loading → first-time loading state
                     } else if viewModel.isLoading {
-                        VStack(spacing: 12) {
-                            ProgressView()
-                            Text("Loading your deck…")
-                                .font(.footnote)
-                                .foregroundColor(.secondary)
+                        VStack(spacing: 16) {
+                            Spacer()
+                            
+                            LottieView(name: "manayo-loading", loopMode: .loop)
+                                .frame(width: 180, height: 180)
+                                .clipped()
+
+                            Spacer()
                         }
                         
                         // 3) Error and no cards
@@ -129,6 +137,9 @@ struct ContentView: View {
                     }
                 }
             }
+        }
+        .safeAreaInset(edge: .bottom) {
+            bottomNavBar
         }
         .task {
             await viewModel.loadCards()
@@ -170,13 +181,11 @@ struct ContentView: View {
                             onManual: {
                                 withAnimation(.spring(response: 0.35, dampingFraction: 0.9)) {
                                     newCardMode = .manual
-                                    sheetDetent = .large
                                 }
                             },
                             onAI: {
                                 withAnimation(.spring(response: 0.35, dampingFraction: 0.9)) {
                                     newCardMode = .ai
-                                    sheetDetent = .large
                                 }
                             }
                         )
@@ -215,14 +224,29 @@ struct ContentView: View {
                 }
             }
             .animation(.spring(response: 0.35, dampingFraction: 0.9), value: newCardMode)
-            .presentationDetents([.height(320), .large], selection: $sheetDetent)
+            .presentationDetents(
+                newCardMode == .choice
+                    ? [.height(320)]   // sólo mitad para el picker
+                    : [.large]         // sólo fullscreen para manual / IA
+            )
             .presentationBackground(.clear)
         }
     }
     
+    private var header: some View {
+        ZStack {
+            VStack(spacing: -4) {
+                 Text("マナヨウ")
+                     .font(.custom("IBM Plex Sans JP", size: 24).weight(.bold))
+                     .foregroundColor(.white)
+                     .tracking(1)
+             }
+             .padding(.top, 20)
+             .padding(.bottom, 8)
+        }
+    }
+    
     private var bottomNavBar: some View {
-        VStack {
-            Spacer()
             HStack(spacing: 24) {
                 Button(action: {
                     // future: open menu
@@ -255,7 +279,6 @@ struct ContentView: View {
 
                 Button(action: {
                     newCardMode = .choice
-                    sheetDetent = .fraction(0.35)
                     showNewCardSheet = true
                 }) {
                     Image(systemName: "plus")
@@ -267,8 +290,8 @@ struct ContentView: View {
                 }
             }
             .padding(.horizontal, 32)
-            .padding(.bottom, 32)
-        }
+            .padding(.bottom, 16)
+            .background(Color.black.opacity(0.001))
     }
     
     private func discardAndAdvance() {

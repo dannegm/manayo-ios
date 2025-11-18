@@ -1,138 +1,204 @@
 import SwiftUI
 
 public struct ManayoDeckView: View {
-    public let cards: [ManayoCard]
-    public let metaProvider: (ManayoCard) -> ManayoCardMeta
+    public struct Item: Identifiable {
+        public let card: ManayoCard
+        public let meta: ManayoCardMeta
+
+        public var id: String { card.id }
+    }
+
+    public let items: [Item]
     public let onSelect: (ManayoCard) -> Void
 
     @Environment(\.dismiss) private var dismiss
-    @State private var selectedTab: DeckTab = .all
 
-    public init(
-       cards: [ManayoCard],
-       metaProvider: @escaping (ManayoCard) -> ManayoCardMeta,
-       onSelect: @escaping (ManayoCard) -> Void
-    ) {
-       self.cards = cards
-       self.metaProvider = metaProvider
-       self.onSelect = onSelect
-    }
-
-    public enum DeckTab: String, CaseIterable, Identifiable {
+    private enum Tab: String, CaseIterable {
         case all = "Todos"
         case favorites = "Favoritos"
         case new = "Nuevos"
+    }
 
-        public var id: String { rawValue }
+    @State private var selectedTab: Tab = .all
+
+    public init(
+        cards: [ManayoCard],
+        metaProvider: (ManayoCard) -> ManayoCardMeta,
+        onSelect: @escaping (ManayoCard) -> Void
+    ) {
+        self.items = cards.map { .init(card: $0, meta: metaProvider($0)) }
+        self.onSelect = onSelect
     }
 
     public var body: some View {
-        NavigationStack {
-            VStack {
-                Text("Deck")
-                    .font(.headline)
-                    .padding(.horizontal)
-                    .padding(.top, 20)
-                
-                Picker("Filtro", selection: $selectedTab) {
-                    ForEach(DeckTab.allCases) { tab in
-                        Text(tab.rawValue).tag(tab)
-                    }
-                }
-                .pickerStyle(.segmented)
-                .padding([.horizontal, .top])
+        ZStack {
+            LinearGradient(
+                colors: [
+                    Color.black,
+                    Color(red: 0.05, green: 0.05, blue: 0.1)
+                ],
+                startPoint: .top,
+                endPoint: .bottom
+            )
+            .ignoresSafeArea()
 
-                let filteredCards = filtered(cards: cards, for: selectedTab)
+            VStack(spacing: 16) {
+                topBar
+                segmentedTabs
+                listContent
+            }
+            .padding(.horizontal, 16)
+            .padding(.top, 12)
+            .padding(.bottom, 8)
+        }
+    }
 
-                if filteredCards.isEmpty {
-                    VStack(spacing: 8) {
-                        Text(emptyTitle(for: selectedTab))
-                            .font(.subheadline.weight(.semibold))
-                            .foregroundColor(.secondary)
-                        Text(emptySubtitle(for: selectedTab))
-                            .font(.caption)
-                            .foregroundColor(.secondary.opacity(0.8))
-                    }
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-                } else {
-                    List(filteredCards) { card in
-                        let meta = metaProvider(card)
+    private var topBar: some View {
+        HStack {
+            Button("Cerrar") {
+                dismiss()
+            }
+            .foregroundColor(.blue)
 
-                        HStack {
-                            VStack(alignment: .leading, spacing: 4) {
-                                Text(card.kana)
-                                    .font(.headline)
-                                Text(card.romaji)
-                                    .font(.subheadline)
-                                    .foregroundColor(.secondary)
-                            }
-                            Spacer()
-                            HStack(spacing: 6) {
-                                if meta.viewCount == 0 {
-                                    Circle()
-                                        .fill(Color.green)
-                                        .frame(width: 8, height: 8)
-                                        .transition(.scale.combined(with: .opacity))
-                                }
-                                if meta.isFavorite {
-                                    Image(systemName: "star.fill")
-                                        .font(.system(size: 12, weight: .semibold))
-                                        .foregroundColor(.yellow)
-                                        .transition(.scale.combined(with: .opacity))
-                                }
-                            }
-                        }
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .contentShape(Rectangle())
-                        .onTapGesture {
-                            onSelect(card)
-                            dismiss()
-                        }
+            Spacer()
+
+            Text("Deck")
+                .font(.headline.weight(.semibold))
+                .foregroundColor(.white)
+
+            Spacer()
+
+            // spacer to balance layout
+            Color.clear
+                .frame(width: 44, height: 1)
+        }
+    }
+
+    private var segmentedTabs: some View {
+        HStack(spacing: 0) {
+            ForEach(Tab.allCases, id: \.self) { tab in
+                Button(action: {
+                    withAnimation(.spring(response: 0.25, dampingFraction: 0.9)) {
+                        selectedTab = tab
                     }
-                    .animation(.spring(response: 0.3, dampingFraction: 0.8), value: selectedTab)
-                    
+                }) {
+                    Text(tab.rawValue)
+                        .font(.caption.weight(.semibold))
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 8)
+                        .background(
+                            RoundedRectangle(cornerRadius: 10, style: .continuous)
+                                .fill(selectedTab == tab ? Color.white : Color.clear)
+                        )
+                        .foregroundColor(
+                            selectedTab == tab ? .black : .white.opacity(0.8)
+                        )
                 }
             }
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar(.hidden, for: .navigationBar)
+        }
+        .padding(4)
+        .background(
+            RoundedRectangle(cornerRadius: 14, style: .continuous)
+                .fill(Color.white.opacity(0.08))
+        )
+    }
+
+    private var filteredItems: [Item] {
+        switch selectedTab {
+        case .all:
+            return items
+        case .favorites:
+            return items.filter { $0.meta.isFavorite }
+        case .new:
+            return items.filter { $0.meta.viewCount < 2 }
         }
     }
-    
-    private func filtered(cards: [ManayoCard], for tab: DeckTab) -> [ManayoCard] {
-        cards.filter { card in
-            let meta = metaProvider(card)
 
-            switch tab {
-            case .all:
-                return true
-            case .favorites:
-                return meta.isFavorite
-            case .new:
-                return meta.viewCount == 0
+    private var listContent: some View {
+        Group {
+            if filteredItems.isEmpty {
+                VStack(spacing: 8) {
+                    Text(emptyTitle)
+                        .font(.subheadline.weight(.semibold))
+                        .foregroundColor(.white)
+                    Text(emptySubtitle)
+                        .font(.caption)
+                        .foregroundColor(.white.opacity(0.7))
+                }
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+            } else {
+                ScrollView {
+                    LazyVStack(spacing: 10) {
+                        ForEach(filteredItems) { item in
+                            deckRow(for: item)
+                        }
+                    }
+                    .padding(.vertical, 4)
+                }
             }
         }
     }
 
-    private func emptyTitle(for tab: DeckTab) -> String {
-        switch tab {
-        case .all:
-            return "No hay cartas."
-        case .favorites:
-            return "Sin favoritos aún."
-        case .new:
-            return "No hay cartas nuevas."
+    private var emptyTitle: String {
+        switch selectedTab {
+        case .all: return "No hay cartas en el deck."
+        case .favorites: return "Todavía no tienes favoritos."
+        case .new: return "Ya conoces todas tus cartas."
         }
     }
 
-    private func emptySubtitle(for tab: DeckTab) -> String {
-        switch tab {
-        case .all:
-            return "Agrega cartas desde el seed o la IA."
-        case .favorites:
-            return "Haz swipe a la derecha en una carta para marcarla como favorita."
-        case .new:
-            return "Todas las cartas ya fueron vistas al menos una vez."
+    private var emptySubtitle: String {
+        switch selectedTab {
+        case .all: return "Crea una nueva carta o genera una con IA."
+        case .favorites: return "Haz swipe a la derecha en una carta para marcarla."
+        case .new: return "Cuando lleguen cartas nuevas aparecerán aquí."
         }
+    }
+
+    private func deckRow(for item: Item) -> some View {
+        Button {
+            onSelect(item.card)
+            dismiss()
+        } label: {
+            HStack(alignment: .center, spacing: 10) {
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(item.card.jp)
+                        .font(.system(size: 18, weight: .semibold))
+                        .foregroundColor(.white)
+
+                    Text(item.card.romaji)
+                        .font(.caption)
+                        .foregroundColor(.white.opacity(0.7))
+                }
+
+                Spacer()
+
+                VStack(alignment: .trailing, spacing: 4) {
+                    if item.meta.isFavorite {
+                        Image(systemName: "star.fill")
+                            .font(.caption2)
+                            .foregroundColor(.yellow)
+                    }
+
+                    if item.meta.viewCount < 2 {
+                        Text("NUEVO")
+                            .font(.caption2.weight(.bold))
+                            .padding(.horizontal, 6)
+                            .padding(.vertical, 3)
+                            .background(Color.green.opacity(0.9))
+                            .foregroundColor(.black)
+                            .clipShape(Capsule())
+                    }
+                }
+            }
+            .padding(.horizontal, 14)
+            .padding(.vertical, 10)
+            .background(
+                RoundedRectangle(cornerRadius: 16, style: .continuous)
+                    .fill(Color.white.opacity(0.06))
+            )
+        }
+        .buttonStyle(.plain)
     }
 }
 

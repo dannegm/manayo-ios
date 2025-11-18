@@ -11,6 +11,14 @@ struct ContentView: View {
     
     @State private var showNewCardSheet: Bool = false
     @State private var showMenuSheet: Bool = false
+    @State private var newCardMode: NewCardMode = .choice
+    @State private var sheetDetent: PresentationDetent = .fraction(0.35)
+    
+    private enum NewCardMode {
+        case choice
+        case manual
+        case ai
+    }
 
     var body: some View {
         NavigationStack {
@@ -60,7 +68,7 @@ struct ContentView: View {
                                             showDeck = true
                                             return
                                         }
-
+                                        
                                         if translation.width > horizontalThreshold {
                                             favoriteAndAdvance()
                                         } else if translation.width < -horizontalThreshold {
@@ -91,7 +99,7 @@ struct ContentView: View {
                             .transition(.opacity)
                         }
                         
-                    // 2) No cards yet, but still loading → first-time loading state
+                        // 2) No cards yet, but still loading → first-time loading state
                     } else if viewModel.isLoading {
                         VStack(spacing: 12) {
                             ProgressView()
@@ -100,7 +108,7 @@ struct ContentView: View {
                                 .foregroundColor(.secondary)
                         }
                         
-                    // 3) Error and no cards
+                        // 3) Error and no cards
                     } else if let error = viewModel.errorMessage {
                         VStack(spacing: 12) {
                             Text(error)
@@ -113,7 +121,7 @@ struct ContentView: View {
                             }
                         }
                         
-                    // 4) No cards, no error, no loading → empty state
+                        // 4) No cards, no error, no loading → empty state
                     } else {
                         Text("No cards available.")
                             .font(.footnote)
@@ -143,16 +151,72 @@ struct ContentView: View {
             .presentationDragIndicator(.visible)
         }
         .sheet(isPresented: $showNewCardSheet) {
-            NewCardView { draft in
-                Task {
-                    await viewModel.createCard(from: draft)
-                    
-                    if let newIndex = viewModel.cards.firstIndex(where: { $0.jp == draft.jp && $0.meaning == draft.meaning }) {
-                        currentIndex = newIndex
-                        markCurrentSeen()
+            ZStack {
+                // Fondo compartido para TODO el flujo
+                LinearGradient(
+                    colors: [
+                        Color.black,
+                        Color(red: 0.05, green: 0.05, blue: 0.1),
+                    ],
+                    startPoint: .top,
+                    endPoint: .bottom
+                )
+                .ignoresSafeArea()
+                
+                Group {
+                    switch newCardMode {
+                    case .choice:
+                        NewCardModePickerView(
+                            onManual: {
+                                withAnimation(.spring(response: 0.35, dampingFraction: 0.9)) {
+                                    newCardMode = .manual
+                                    sheetDetent = .large
+                                }
+                            },
+                            onAI: {
+                                withAnimation(.spring(response: 0.35, dampingFraction: 0.9)) {
+                                    newCardMode = .ai
+                                    sheetDetent = .large
+                                }
+                            }
+                        )
+                        .transition(.opacity.combined(with: .scale(scale: 0.95)))
+                        
+                    case .manual:
+                        NewCardView { draft in
+                            Task {
+                                await viewModel.createCard(from: draft)
+                                
+                                if let newIndex = viewModel.cards.firstIndex(where: {
+                                    $0.jp == draft.jp && $0.meaning == draft.meaning
+                                }) {
+                                    currentIndex = newIndex
+                                    markCurrentSeen()
+                                }
+                            }
+                        }
+                        .transition(.move(edge: .bottom).combined(with: .opacity))
+                        
+                    case .ai:
+                        ManayoAICardWizardView { draft in
+                            Task {
+                                await viewModel.createCard(from: draft)
+                                
+                                if let newIndex = viewModel.cards.firstIndex(where: {
+                                    $0.jp == draft.jp && $0.meaning == draft.meaning
+                                }) {
+                                    currentIndex = newIndex
+                                    markCurrentSeen()
+                                }
+                            }
+                        }
+                        .transition(.move(edge: .bottom).combined(with: .opacity))
                     }
                 }
             }
+            .animation(.spring(response: 0.35, dampingFraction: 0.9), value: newCardMode)
+            .presentationDetents([.height(320), .large], selection: $sheetDetent)
+            .presentationBackground(.clear)
         }
     }
     
@@ -190,6 +254,8 @@ struct ContentView: View {
                 }
 
                 Button(action: {
+                    newCardMode = .choice
+                    sheetDetent = .fraction(0.35)
                     showNewCardSheet = true
                 }) {
                     Image(systemName: "plus")

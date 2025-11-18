@@ -74,51 +74,35 @@ public struct NewCardView: View {
     }
     
     public var body: some View {
-        NavigationStack {
-            ZStack {
-                LinearGradient(
-                    colors: [
-                        Color.black,
-                        Color(red: 0.05, green: 0.05, blue: 0.1),
-                    ],
-                    startPoint: .top,
-                    endPoint: .bottom
-                )
-                .ignoresSafeArea()
-                
-                VStack(spacing: 0) {
-                    topBar
+        VStack(spacing: 0) {
+            topBar
+            
+            ScrollView {
+                VStack(alignment: .leading, spacing: 20) {
+                    modeSelector
+                    coreFields
+                    detailsSection
+                    usageSection
+                    flavorSection
                     
-                    ScrollView {
-                        VStack(alignment: .leading, spacing: 20) {
-                            modeSelector
-                            coreFields
-                            detailsSection
-                            usageSection
-                            flavorSection
-                            
-                            Button(action: handleSave) {
-                                HStack {
-                                    Spacer()
-                                    Text("Guardar carta")
-                                        .font(.headline)
-                                        .foregroundColor(.black)
-                                    Spacer()
-                                }
-                                .padding(.vertical, 14)
-                                .background(isValid ? Color.white : Color.white.opacity(0.2))
-                                .clipShape(Capsule())
-                            }
-                            .padding(.top, 10)
-                            .disabled(!isValid)
+                    Button(action: handleSave) {
+                        HStack {
+                            Spacer()
+                            Text("Guardar carta")
+                                .font(.headline)
+                                .foregroundColor(.black)
+                            Spacer()
                         }
-                        .padding(.horizontal, 20)
-                        .padding(.vertical, 24)
+                        .padding(.vertical, 14)
+                        .background(isValid ? Color.white : Color.white.opacity(0.2))
+                        .clipShape(Capsule())
                     }
+                    .padding(.top, 10)
+                    .disabled(!isValid)
                 }
+                .padding(.horizontal, 20)
+                .padding(.vertical, 24)
             }
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar(.hidden, for: .navigationBar)
         }
     }
     

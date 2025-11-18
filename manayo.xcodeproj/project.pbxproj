@@ -10,6 +10,7 @@
 		95C1C8252ECB0DD200404C84 /* LICENSE in Resources */ = {isa = PBXBuildFile; fileRef = 95C1C8242ECB0DD000404C84 /* LICENSE */; };
 		95C1C8272ECB0DF600404C84 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 95C1C8262ECB0DF500404C84 /* README.md */; };
 		95C1C8292ECB0EBF00404C84 /* .gitignore in Resources */ = {isa = PBXBuildFile; fileRef = 95C1C8282ECB0EB600404C84 /* .gitignore */; };
+		95C1C87C2ECC0B8B00404C84 /* Lottie in Frameworks */ = {isa = PBXBuildFile; productRef = 95C1C87B2ECC0B8B00404C84 /* Lottie */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -36,6 +37,7 @@
 		95C1C8242ECB0DD000404C84 /* LICENSE */ = {isa = PBXFileReference; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
 		95C1C8262ECB0DF500404C84 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		95C1C8282ECB0EB600404C84 /* .gitignore */ = {isa = PBXFileReference; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
+		95C1C8352ECBE2F300404C84 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -74,6 +76,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				95C1C87C2ECC0B8B00404C84 /* Lottie in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -103,6 +106,7 @@
 				95C1C7D62EC9589E00404C84 /* manayo */,
 				95C1C7E42EC9589F00404C84 /* manayoTests */,
 				95C1C7EE2EC9589F00404C84 /* manayoUITests */,
+				95C1C8342ECBE2F300404C84 /* Frameworks */,
 				95C1C7D52EC9589E00404C84 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -115,6 +119,14 @@
 				95C1C7EB2EC9589F00404C84 /* manayoUITests.xctest */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		95C1C8342ECBE2F300404C84 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				95C1C8352ECBE2F300404C84 /* Foundation.framework */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -137,6 +149,7 @@
 			);
 			name = manayo;
 			packageProductDependencies = (
+				95C1C87B2ECC0B8B00404C84 /* Lottie */,
 			);
 			productName = manayo;
 			productReference = 95C1C7D42EC9589E00404C84 /* manayo.app */;
@@ -220,6 +233,9 @@
 			);
 			mainGroup = 95C1C7CB2EC9589E00404C84;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				95C1C87A2ECC0A3500404C84 /* XCRemoteSwiftPackageReference "lottie-spm" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 95C1C7D52EC9589E00404C84 /* Products */;
 			projectDirPath = "";
@@ -434,7 +450,6 @@
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
-				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -470,7 +485,6 @@
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
-				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -602,6 +616,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		95C1C87A2ECC0A3500404C84 /* XCRemoteSwiftPackageReference "lottie-spm" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/airbnb/lottie-spm.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 4.5.2;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		95C1C87B2ECC0B8B00404C84 /* Lottie */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 95C1C87A2ECC0A3500404C84 /* XCRemoteSwiftPackageReference "lottie-spm" */;
+			productName = Lottie;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 95C1C7CC2EC9589E00404C84 /* Project object */;
 }

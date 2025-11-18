@@ -19,9 +19,7 @@ struct ManayoPreviewData {
         meaning: "¿Es en serio?",
         usage: usage,
         flavor: "Cuando la realidad te trolea muy fuerte.",
-        source: "official",
-        created: nil,
-        updated: nil
+        source: "official"
     )
 
     static let anotherCard = ManayoCard(
@@ -40,9 +38,7 @@ struct ManayoPreviewData {
             es: "Es peligroso, sígueme."
         ),
         flavor: "Energía de prota que sabe lo que hace.",
-        source: "official",
-        created: nil,
-        updated: nil
+        source: "official"
     )
 
     static let cards: [ManayoCard] = [

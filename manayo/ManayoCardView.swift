@@ -1,9 +1,16 @@
 import SwiftUI
 
+struct ManayoKanjiSelection: Identifiable {
+    let value: Character
+    var id: String { String(value) }
+}
+
 public struct ManayoCardView: View {
     public let card: ManayoCard
     public let viewCount: Int
     public let isFavorite: Bool
+    
+    @State private var kanjiForPopup: ManayoKanjiSelection?
     
     public init(card: ManayoCard, viewCount: Int, isFavorite: Bool) {
         self.card = card
@@ -27,9 +34,16 @@ public struct ManayoCardView: View {
                 VStack(alignment: .leading, spacing: 8) {
                     HStack(alignment: .top) {
                         VStack(alignment: .leading, spacing: 4) {
-                            Text(card.jp)
-                                .font(.system(size: 32, weight: .bold))
-                                .foregroundColor(.white)
+                            
+                            ManayoJPInteractiveText(
+                                text: card.jp,
+                                onKanjiTap: { ch in
+                                    print("Preview tapped kanji:", ch)
+                                    kanjiForPopup = ManayoKanjiSelection(value: ch)
+                                }
+                            )
+                            .font(.system(size: 32, weight: .bold))
+                            .foregroundColor(.white)
 
                             Text(card.romaji)
                                 .font(.footnote)
@@ -143,6 +157,11 @@ public struct ManayoCardView: View {
                 }
             }
             .position(x: geo.size.width / 2, y: geo.size.height / 2 - ((geo.size.height / 32) * 2))
+        }
+        .sheet(item: $kanjiForPopup) { selection in
+            ManayoKanjiPopupView(kanji: selection.value)
+                .presentationDetents([.height(320)])
+                .transition(.opacity.combined(with: .scale(scale: 0.95)))
         }
     }
     

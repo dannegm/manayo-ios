@@ -151,4 +151,25 @@ public final class ManayoAPI {
         let suggestion = try decoder.decode(ManayoAISuggestion.self, from: data)
         return suggestion
     }
+    
+    public struct ManayoSettingsResponse: Codable {
+        public let ia_enabled: Bool
+    }
+
+    public func fetchSettings() async throws -> ManayoSettingsResponse {
+        let url = endpointsURL
+            .appendingPathComponent("/manayo/settings") // <- ojo: endpoints.hckr.mx
+
+        var request = URLRequest(url: url)
+        request.httpMethod = "GET"
+
+        let (data, response) = try await urlSession.data(for: request)
+
+        guard let http = response as? HTTPURLResponse,
+              (200..<300).contains(http.statusCode) else {
+            throw URLError(.badServerResponse)
+        }
+
+        return try JSONDecoder().decode(ManayoSettingsResponse.self, from: data)
+    }
 }

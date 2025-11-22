@@ -174,13 +174,15 @@ public struct ManayoDeckView: View {
                 Spacer()
 
                 VStack(alignment: .trailing, spacing: 4) {
-                    if item.meta.isFavorite {
+                    let isNew = item.meta.viewCount < 2
+
+                    if item.meta.isFavorite && !isNew {
                         Image(systemName: "star.fill")
                             .font(.caption2)
                             .foregroundColor(.yellow)
                     }
 
-                    if item.meta.viewCount < 2 {
+                    if isNew {
                         Text("NUEVO")
                             .font(.caption2.weight(.bold))
                             .padding(.horizontal, 6)

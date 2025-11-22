@@ -3,8 +3,15 @@ import SwiftUI
 public struct NewCardModePickerView: View {
     public let onManual: () -> Void
     public let onAI: () -> Void
+    
+    @ObservedObject public var viewModel: ManayoViewModel
 
-    public init(onManual: @escaping () -> Void, onAI: @escaping () -> Void) {
+    public init(
+        viewModel: ManayoViewModel,
+        onManual: @escaping () -> Void,
+        onAI: @escaping () -> Void
+    ) {
+        self.viewModel = viewModel
         self.onManual = onManual
         self.onAI = onAI
     }
@@ -50,7 +57,7 @@ public struct NewCardModePickerView: View {
                     .background(Color.white.opacity(0.10))
                     .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
                 }
-
+                
                 Button(action: onAI) {
                     HStack(spacing: 14) {
                         Image(systemName: "wand.and.stars")
@@ -69,17 +76,23 @@ public struct NewCardModePickerView: View {
                     .background(Color.white.opacity(0.10))
                     .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
                 }
+                .disabled(!viewModel.iaEnabled)
+                .opacity(viewModel.iaEnabled ? 1 : 0.35)
 
                 Spacer()
             }
             .padding(.horizontal, 24)
             .padding(.top, 40)
         }
+        .task {
+            await viewModel.refreshIAEnabled()
+        }
     }
 }
 
 #Preview {
     NewCardModePickerView(
+        viewModel: ManayoViewModel(),
         onManual: {},
         onAI: {}
     )

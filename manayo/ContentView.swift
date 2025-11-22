@@ -2,6 +2,7 @@ import SwiftUI
 
 struct ContentView: View {
     @StateObject private var viewModel = ManayoViewModel()
+    @StateObject private var network = ManayoNetworkMonitor.shared
     
     @State private var currentIndex: Int = 0
     @State private var dragOffset: CGSize = .zero
@@ -62,6 +63,8 @@ struct ContentView: View {
                                             let horizontalThreshold: CGFloat = 80
                                             let verticalThreshold: CGFloat = 100
                                             let translation = value.translation
+                                            
+                                            ManayoSpeech.shared.stop()
                                             
                                             // vertical swipe → open deck
                                             if abs(translation.height) > verticalThreshold &&
@@ -178,6 +181,7 @@ struct ContentView: View {
                     switch newCardMode {
                     case .choice:
                         NewCardModePickerView(
+                            viewModel: viewModel,
                             onManual: {
                                 withAnimation(.spring(response: 0.35, dampingFraction: 0.9)) {
                                     newCardMode = .manual
@@ -251,6 +255,7 @@ struct ContentView: View {
                 Button(action: {
                     // future: open menu
                     // showMenuSheet = true
+                    ManayoSpeech.shared.stop()
                     print("menu tapped")
                 }) {
                     Image(systemName: "line.3.horizontal")
@@ -262,6 +267,7 @@ struct ContentView: View {
                 }
 
                 Button(action: {
+                    ManayoSpeech.shared.stop()
                     showDeck = true
                 }) {
                     HStack(spacing: 8) {
@@ -278,6 +284,7 @@ struct ContentView: View {
                 }
 
                 Button(action: {
+                    ManayoSpeech.shared.stop()
                     newCardMode = .choice
                     showNewCardSheet = true
                 }) {
@@ -288,6 +295,8 @@ struct ContentView: View {
                         .background(Color.white.opacity(0.12))
                         .clipShape(Circle())
                 }
+                .disabled(!network.isOnline)
+                .opacity(network.isOnline ? 1 : 0.35)
             }
             .padding(.horizontal, 32)
             .padding(.bottom, 16)

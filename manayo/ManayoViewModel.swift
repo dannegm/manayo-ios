@@ -6,8 +6,21 @@ public final class ManayoViewModel: ObservableObject {
     @Published public private(set) var isLoading: Bool = false
     @Published public private(set) var errorMessage: String?
     @Published public private(set) var meta: [String: ManayoCardMeta] = [:]
+    @Published public private(set) var iaEnabled: Bool = true
 
     public init() {}
+    
+    private let iaEnabledKey = "manayoIaEnabled"
+
+    private func loadCachedIAEnabled() {
+        if UserDefaults.standard.object(forKey: iaEnabledKey) != nil {
+            iaEnabled = UserDefaults.standard.bool(forKey: iaEnabledKey)
+        }
+    }
+
+    private func cacheIAEnabled(_ value: Bool) {
+        UserDefaults.standard.set(value, forKey: iaEnabledKey)
+    }
 
     public func loadCards() async {
         isLoading = true
@@ -53,6 +66,16 @@ public final class ManayoViewModel: ObservableObject {
         }
 
         isLoading = false
+    }
+    
+    public func refreshIAEnabled() async {
+        do {
+            let settings = try await ManayoAPI.shared.fetchSettings()
+            iaEnabled = settings.ia_enabled
+        } catch {
+            print("⚠️ Settings fetch failed, disabling IA:", error)
+            iaEnabled = false
+        }
     }
     
     public func metaFor(card: ManayoCard) -> ManayoCardMeta {

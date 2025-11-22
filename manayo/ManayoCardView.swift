@@ -10,7 +10,7 @@ public struct ManayoCardView: View {
     public let viewCount: Int
     public let isFavorite: Bool
     
-    @State private var kanjiForPopup: ManayoKanjiSelection?
+    @State private var kanjiForPopup: ManayoKanjiSelection? = nil
     
     public init(card: ManayoCard, viewCount: Int, isFavorite: Bool) {
         self.card = card
@@ -37,8 +37,8 @@ public struct ManayoCardView: View {
                             
                             ManayoJPInteractiveText(
                                 text: card.jp,
+                                highlighted: kanjiForPopup?.value,
                                 onKanjiTap: { ch in
-                                    print("Preview tapped kanji:", ch)
                                     kanjiForPopup = ManayoKanjiSelection(value: ch)
                                 }
                             )
@@ -158,10 +158,12 @@ public struct ManayoCardView: View {
             }
             .position(x: geo.size.width / 2, y: geo.size.height / 2 - ((geo.size.height / 32) * 2))
         }
-        .sheet(item: $kanjiForPopup) { selection in
+        .sheet(item: $kanjiForPopup, onDismiss: {
+            kanjiForPopup = nil
+        }) { selection in
             ManayoKanjiPopupView(kanji: selection.value)
-                .presentationDetents([.height(320)])
-                .transition(.opacity.combined(with: .scale(scale: 0.95)))
+                .presentationDetents([.height(380)])
+                .presentationBackground(.clear)
         }
     }
     

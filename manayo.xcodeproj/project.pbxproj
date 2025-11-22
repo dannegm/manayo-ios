@@ -10,7 +10,7 @@
 		95C1C8252ECB0DD200404C84 /* LICENSE in Resources */ = {isa = PBXBuildFile; fileRef = 95C1C8242ECB0DD000404C84 /* LICENSE */; };
 		95C1C8272ECB0DF600404C84 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 95C1C8262ECB0DF500404C84 /* README.md */; };
 		95C1C8292ECB0EBF00404C84 /* .gitignore in Resources */ = {isa = PBXBuildFile; fileRef = 95C1C8282ECB0EB600404C84 /* .gitignore */; };
-		95C1C87C2ECC0B8B00404C84 /* Lottie in Frameworks */ = {isa = PBXBuildFile; productRef = 95C1C87B2ECC0B8B00404C84 /* Lottie */; };
+		95E8FEA62ED0EE34007CE210 /* Lottie in Frameworks */ = {isa = PBXBuildFile; productRef = 95E8FEA52ED0EE34007CE210 /* Lottie */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -76,7 +76,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				95C1C87C2ECC0B8B00404C84 /* Lottie in Frameworks */,
+				95E8FEA62ED0EE34007CE210 /* Lottie in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -149,7 +149,7 @@
 			);
 			name = manayo;
 			packageProductDependencies = (
-				95C1C87B2ECC0B8B00404C84 /* Lottie */,
+				95E8FEA52ED0EE34007CE210 /* Lottie */,
 			);
 			productName = manayo;
 			productReference = 95C1C7D42EC9589E00404C84 /* manayo.app */;
@@ -234,7 +234,7 @@
 			mainGroup = 95C1C7CB2EC9589E00404C84;
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
-				95C1C87A2ECC0A3500404C84 /* XCRemoteSwiftPackageReference "lottie-spm" */,
+				95E8FEA42ED0EE2E007CE210 /* XCRemoteSwiftPackageReference "lottie-spm" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 95C1C7D52EC9589E00404C84 /* Products */;
@@ -618,7 +618,7 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		95C1C87A2ECC0A3500404C84 /* XCRemoteSwiftPackageReference "lottie-spm" */ = {
+		95E8FEA42ED0EE2E007CE210 /* XCRemoteSwiftPackageReference "lottie-spm" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/airbnb/lottie-spm.git";
 			requirement = {
@@ -629,9 +629,9 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		95C1C87B2ECC0B8B00404C84 /* Lottie */ = {
+		95E8FEA52ED0EE34007CE210 /* Lottie */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 95C1C87A2ECC0A3500404C84 /* XCRemoteSwiftPackageReference "lottie-spm" */;
+			package = 95E8FEA42ED0EE2E007CE210 /* XCRemoteSwiftPackageReference "lottie-spm" */;
 			productName = Lottie;
 		};
 /* End XCSwiftPackageProductDependency section */

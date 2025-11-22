@@ -34,4 +34,8 @@ public final class ManayoSpeech {
         synthesizer.stopSpeaking(at: .immediate)
         synthesizer.speak(utterance)
     }
+
+    public func stop() {
+        synthesizer.stopSpeaking(at: .immediate)
+    }
 }
